@@ -25,7 +25,6 @@ export interface Hospital {
   id: string;
   location: Location;
   name: string;
-  type: 'GENERAL' | 'SPECIALIST' | 'CLINIC';
 }
 
 export interface RouteStep {
