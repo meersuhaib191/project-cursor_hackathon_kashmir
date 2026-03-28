@@ -30,13 +30,40 @@ export function ControlPanel() {
         <CardTitle className="text-sm font-medium">Mission Control</CardTitle>
         <div className="flex items-center gap-2">
           {gpsActive ? (
-            <Badge variant="success" className="text-[9px] h-4">
+            <Badge variant="success" className="text-[9px] h-4 inline-flex">
               <Navigation className="h-2 w-2 mr-1" /> GPS LIVE
             </Badge>
           ) : (
-            <Badge variant="destructive" className="text-[9px] h-4 animate-pulse">
-              NO GPS
-            </Badge>
+            <div className="flex items-center gap-1.5">
+              <Badge variant="destructive" className="text-[9px] h-4 animate-pulse">
+                NO GPS
+              </Badge>
+              <button 
+                onClick={() => {
+                  if (typeof window !== 'undefined' && 'geolocation' in navigator) {
+                    navigator.geolocation.getCurrentPosition(
+                      (position) => {
+                        useLifeLineStore.getState().setAmbulanceLocation({
+                          lat: position.coords.latitude,
+                          lng: position.coords.longitude
+                        });
+                        useLifeLineStore.getState().setGpsActive(true);
+                        useLifeLineStore.getState().addLog('Manual GPS lock acquired.', 'SUCCESS');
+                      },
+                      (error) => {
+                        console.warn('Manual GPS failed:', error);
+                        useLifeLineStore.getState().addLog('Failed to acquire GPS. Permission denied or unavailable.', 'WARNING');
+                      },
+                      { enableHighAccuracy: true, timeout: 5000, maximumAge: 0 }
+                    );
+                  }
+                }}
+                className="bg-slate-800 hover:bg-slate-700 text-slate-400 hover:text-white p-1 rounded transition-colors"
+                title="Fetch Device Location"
+              >
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" x2="12" y1="2" y2="6"/><line x1="12" x2="12" y1="18" y2="22"/><line x1="2" x2="6" y1="12" y2="12"/><line x1="18" x2="22" y1="12" y2="12"/></svg>
+              </button>
+            </div>
           )}
         </div>
       </CardHeader>
