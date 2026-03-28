@@ -27,6 +27,7 @@ interface LifeLineStore {
   hasCongestion: boolean;
   isBroadcasting: boolean;
   pickupAddress: string;
+  activeTarget: { id: string, name: string, location: Location } | null;
   normalRouteEta: number | null;   // seconds — what it would take without emergency
   timeSaved: number | null;        // seconds — time saved by emergency routing
 
@@ -81,6 +82,7 @@ export const useLifeLineStore = create<LifeLineStore>((set, get) => ({
   hasCongestion: false,
   isBroadcasting: false,
   pickupAddress: '',
+  activeTarget: null,
   normalRouteEta: null,
   timeSaved: null,
 
@@ -100,7 +102,7 @@ export const useLifeLineStore = create<LifeLineStore>((set, get) => ({
   },
 
   updateDriverLocation: (location, heading, speed) => {
-    const { ambulance, currentRoute, lastRouteCalcLocation, signals } = get();
+    const { ambulance, currentRoute, lastRouteCalcLocation, signals, activeTarget } = get();
 
     // Update signal states based on proximity
     const updatedSignals = signals.map((signal) => {
@@ -133,23 +135,21 @@ export const useLifeLineStore = create<LifeLineStore>((set, get) => ({
     }
 
     // Check if arrived at destination
-    if (currentRoute) {
-      const { PICKUP_LOCATIONS } = require('./mapConfig');
-      let targetNode = get().hospitals.find((h) => h.id === currentRoute.destinationId);
-      let isPickup = false;
-      if (!targetNode) {
-        targetNode = PICKUP_LOCATIONS.find((p: any) => p.id === currentRoute.destinationId);
-        isPickup = true;
-      }
-
-      if (targetNode) {
-        const distToNode = haversineDistance(location, targetNode.location);
-        if (distToNode < 30) {
-          if (simulationInterval) clearInterval(simulationInterval);
-          set({ currentRoute: null, hasCongestion: false, signals: [], normalRouteEta: null, timeSaved: null });
-          set((s) => ({ ambulance: { ...s.ambulance, status: 'ARRIVED' } }));
-          get().addLog(isPickup ? `👥 Reached patient origin: ${targetNode.name}.` : `🏥 Arrived at hospital. Mission segment complete!`, 'SUCCESS');
-        }
+    if (activeTarget) {
+      const distToNode = haversineDistance(location, activeTarget.location);
+      if (distToNode < 30) {
+        if (simulationInterval) clearInterval(simulationInterval);
+        set({ 
+          currentRoute: null, 
+          hasCongestion: false, 
+          signals: [], 
+          normalRouteEta: null, 
+          timeSaved: null,
+          activeTarget: null // Reset target on arrival
+        });
+        set((s) => ({ ambulance: { ...s.ambulance, status: 'ARRIVED' } }));
+        const isPickup = activeTarget.id === 'CUSTOM' || activeTarget.id.startsWith('P');
+        get().addLog(isPickup ? `🎯 Reached Pickup Origin: ${activeTarget.name}` : `🏥 Arrived at hospital: ${activeTarget.name}. Mission segment complete!`, 'SUCCESS');
       }
     }
   },
@@ -256,7 +256,7 @@ export const useLifeLineStore = create<LifeLineStore>((set, get) => ({
 
     if (!targetNode) return;
 
-    set({ isRouteLoading: true });
+    set({ isRouteLoading: true, activeTarget: targetNode });
     get().addLog(`🚑 Dispatching to ${targetNode.name}...`, 'EMERGENCY');
 
     const route = await fetchRoute(
@@ -400,6 +400,7 @@ export const useLifeLineStore = create<LifeLineStore>((set, get) => ({
       lastRouteCalcLocation: null,
       hasCongestion: false,
       isBroadcasting: false,
+      activeTarget: null,
       signals: [],
       normalRouteEta: null,
       timeSaved: null,

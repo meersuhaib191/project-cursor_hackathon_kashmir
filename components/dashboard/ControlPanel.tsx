@@ -117,6 +117,17 @@ export function ControlPanel() {
                 <Search className="h-4 w-4" />
               </button>
             </div>
+            {!isDispatching && (
+              <Button
+                onClick={() => startDispatch('PICKUP')}
+                variant="outline"
+                className="w-full border-blue-500/50 text-blue-400 hover:bg-blue-500/10 h-8 text-[10px] uppercase font-bold tracking-wider mt-1"
+                disabled={!selectedPickupId || selectedPickupId === 'GPS' || selectedPickupId === 'DEFAULT'}
+              >
+                {isRouteLoading ? <Loader2 className="h-3 w-3 animate-spin mr-2" /> : <MapPin className="mr-2 h-3 w-3" />}
+                Route to Pickup
+              </Button>
+            )}
           </div>
 
           {/* Hospital Dropdown */}
@@ -140,6 +151,17 @@ export function ControlPanel() {
                 </option>
               ))}
             </select>
+            {!isDispatching && (
+              <Button
+                onClick={() => startDispatch('HOSPITAL')}
+                variant="emergency"
+                className="w-full h-9 text-[10px] uppercase font-bold tracking-wider shadow-[0_0_15px_rgba(220,38,38,0.2)] mt-1"
+                disabled={!selectedHospitalId}
+              >
+                {isRouteLoading ? <Loader2 className="h-3 w-3 animate-spin mr-2" /> : <Siren className="mr-2 h-3.5 w-3.5" />}
+                Route to Hospital
+              </Button>
+            )}
           </div>
 
           {/* Emergency Mode Static Indicator */}
@@ -185,41 +207,14 @@ export function ControlPanel() {
             </div>
           )}
 
-          {/* Dispatch Controls */}
-          <div className="grid grid-cols-2 gap-2 pt-1">
-            {!isDispatching ? (
-              <div className="flex flex-col gap-2 w-full col-span-2">
-                {isRouteLoading ? (
-                  <Button variant="secondary" className="w-full opacity-70 cursor-wait" disabled>
-                    <Loader2 className="mr-2 h-4 w-4 animate-spin" /> Calculating Neural Route...
-                  </Button>
-                ) : (
-                  <>
-                    <Button
-                      onClick={() => startDispatch('PICKUP')}
-                      variant="outline"
-                      className="w-full border-blue-500/50 text-blue-400 hover:bg-blue-500/10 h-9 text-xs uppercase font-bold tracking-wider"
-                      disabled={!selectedPickupId || selectedPickupId === 'GPS' || selectedPickupId === 'DEFAULT'}
-                    >
-                      <MapPin className="mr-2 h-3.5 w-3.5" /> Route to Pickup
-                    </Button>
-                    <Button
-                      onClick={() => startDispatch('HOSPITAL')}
-                      variant="emergency"
-                      className="w-full h-10 text-xs uppercase font-bold tracking-wider shadow-[0_0_15px_rgba(220,38,38,0.3)]"
-                      disabled={!selectedHospitalId}
-                    >
-                      <Siren className="mr-2 h-4 w-4" /> Route to Hospital
-                    </Button>
-                  </>
-                )}
-              </div>
-            ) : (
-              <Button onClick={stopDispatch} variant="destructive" className="w-full col-span-2">
-                <Square className="mr-2 h-4 w-4" /> Cancel Dispatch
+          {/* Active Dispatch Controls */}
+          {isDispatching && (
+            <div className="pt-2">
+              <Button onClick={stopDispatch} variant="destructive" className="w-full h-10 uppercase font-bold tracking-widest text-xs">
+                <Square className="mr-2 h-4 w-4" /> Abort Mission
               </Button>
-            )}
-          </div>
+            </div>
+          )}
         </div>
       </CardContent>
     </Card>
