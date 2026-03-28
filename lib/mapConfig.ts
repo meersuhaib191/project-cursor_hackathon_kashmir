@@ -11,6 +11,19 @@ export const MAP_CONFIG = {
   }
 };
 
+export const PICKUP_LOCATIONS = [
+  { id: 'P1', name: 'Lal Chowk (City Center)', location: { lat: 34.0734, lng: 74.8055 } },
+  { id: 'P2', name: 'Srinagar Int. Airport', location: { lat: 33.9870, lng: 74.7740 } },
+  { id: 'P3', name: 'Hazratbal Shrine', location: { lat: 34.1300, lng: 74.8390 } },
+  { id: 'P4', name: 'Dal Lake (Boulevard Road)', location: { lat: 34.0880, lng: 74.8320 } },
+  { id: 'P5', name: 'Nishat Garden', location: { lat: 34.1250, lng: 74.8730 } },
+  { id: 'P6', name: 'NIT Srinagar Campus', location: { lat: 34.1200, lng: 74.8370 } },
+  { id: 'P7', name: 'Batamaloo Bus Stand', location: { lat: 34.0760, lng: 74.7920 } },
+  { id: 'P8', name: 'Pantha Chowk By-pass', location: { lat: 34.0200, lng: 74.8600 } },
+  { id: 'P9', name: 'Qamarwari Square', location: { lat: 34.0950, lng: 74.7820 } },
+  { id: 'P10', name: 'Jamia Masjid (Downtown)', location: { lat: 34.0950, lng: 74.8140 } }
+];
+
 export const HOSPITALS = [
   { id: 'H1', name: 'Sher-i-Kashmir Institute (SKIMS)', location: { lat: 34.1331, lng: 74.8021 } },
   { id: 'H2', name: 'SMHS Hospital', location: { lat: 34.0827, lng: 74.7937 } },

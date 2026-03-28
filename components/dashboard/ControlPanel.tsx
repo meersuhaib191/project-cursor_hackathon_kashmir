@@ -1,6 +1,7 @@
 'use client';
 
 import { useLifeLineStore } from '@/lib/store';
+import { PICKUP_LOCATIONS } from '@/lib/mapConfig';
 import { Button } from '@/components/ui/Button';
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/Card';
 import { Badge } from '@/components/ui/Badge';
@@ -10,12 +11,14 @@ export function ControlPanel() {
   const {
     ambulance,
     hospitals,
+    selectedPickupId,
     selectedHospitalId,
     emergencyMode,
     isRouteLoading,
     gpsActive,
     hasCongestion,
     isBroadcasting,
+    selectPickup,
     selectHospital,
     toggleEmergencyMode,
     startDispatch,
@@ -86,8 +89,34 @@ export function ControlPanel() {
             </Badge>
           </div>
 
+          {/* Origin Dropdown */}
+          <div className="space-y-1.5 pt-2">
+            <label className="text-[10px] uppercase font-bold text-slate-400 tracking-wider">
+              <MapPin className="h-3 w-3 inline mr-1" />
+              Pickup Origin
+            </label>
+            <select
+              value={selectedPickupId || ''}
+              onChange={(e) => selectPickup(e.target.value)}
+              disabled={isDispatching}
+              className="w-full bg-slate-800/80 border border-slate-700 rounded-lg px-3 py-2 text-sm text-slate-100 focus:outline-none focus:ring-2 focus:ring-blue-500 appearance-none cursor-pointer"
+            >
+              <option value="DEFAULT" disabled>
+                Select pickup point...
+              </option>
+              <option value="GPS" className="text-blue-400 font-semibold">
+                [LIVE] Device GPS
+              </option>
+              {PICKUP_LOCATIONS.map((loc) => (
+                <option key={loc.id} value={loc.id}>
+                  {loc.name}
+                </option>
+              ))}
+            </select>
+          </div>
+
           {/* Hospital Dropdown */}
-          <div className="space-y-1.5">
+          <div className="space-y-1.5 pt-1">
             <label className="text-[10px] uppercase font-bold text-slate-400 tracking-wider">
               <MapPin className="h-3 w-3 inline mr-1" />
               Destination Hospital

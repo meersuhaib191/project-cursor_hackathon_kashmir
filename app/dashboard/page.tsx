@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import dynamic from 'next/dynamic';
+import Link from 'next/link';
 import { ControlPanel } from '@/components/dashboard/ControlPanel';
 import { StatsPanel } from '@/components/dashboard/StatsPanel';
 import { SignalList } from '@/components/dashboard/SignalList';
@@ -53,9 +54,13 @@ export default function DashboardPage() {
     <div className="flex flex-col md:flex-row h-[100dvh] bg-slate-950 text-slate-100 overflow-hidden font-sans">
       {/* Sidebar Navigation (Slim) */}
       <aside className="w-full md:w-16 h-16 md:h-full border-b md:border-b-0 md:border-r border-slate-800 bg-slate-900/50 backdrop-blur-xl flex flex-row md:flex-col items-center justify-between md:py-6 px-4 md:px-0 space-y-0 md:space-y-8 flex-shrink-0 z-30">
-        <div className="bg-red-600 p-2 rounded-xl shadow-[0_0_15px_rgba(220,38,38,0.4)]">
-          <Siren className="h-5 w-5 text-white" />
-        </div>
+        <Link 
+          href="/" 
+          className="bg-red-600 p-2 rounded-xl shadow-[0_0_15px_rgba(220,38,38,0.4)] hover:bg-red-500 transition-colors cursor-pointer"
+          title="Return to Home Dashboard"
+        >
+          <Siren className="h-5 w-5 text-white animate-pulse" />
+        </Link>
 
         <nav className="flex flex-row md:flex-col space-y-0 md:space-y-6 flex-1 items-center justify-end md:justify-start w-full md:relative space-x-4 md:space-x-0">
           <button className="p-2 text-blue-400 bg-blue-500/10 border border-blue-500/20 rounded-xl transition-all">

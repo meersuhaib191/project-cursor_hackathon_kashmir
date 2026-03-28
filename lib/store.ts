@@ -17,6 +17,7 @@ interface LifeLineStore {
   signals: TrafficSignal[];
   hospitals: Hospital[];
   currentRoute: RouteData | null;
+  selectedPickupId: string | null;
   selectedHospitalId: string | null;
   emergencyMode: boolean;
   logs: ActivityLogEntry[];
@@ -31,6 +32,7 @@ interface LifeLineStore {
   // Actions
   setGpsActive: (active: boolean) => void;
   updateDriverLocation: (location: Location, heading: number, speed: number) => void;
+  selectPickup: (pickupId: string) => void;
   selectHospital: (hospitalId: string) => void;
   toggleEmergencyMode: () => void;
   startDispatch: () => Promise<void>;
@@ -59,6 +61,7 @@ export const useLifeLineStore = create<LifeLineStore>((set, get) => ({
   signals: TRAFFIC_SIGNALS.map((s) => ({ ...s, status: 'RED' as const })),
   hospitals: HOSPITALS,
   currentRoute: null,
+  selectedPickupId: null,
   selectedHospitalId: null,
   emergencyMode: true,
   logs: [
@@ -88,6 +91,7 @@ export const useLifeLineStore = create<LifeLineStore>((set, get) => ({
   setAmbulanceLocation: (location) => {
     set((state) => ({
       ambulance: { ...state.ambulance, location },
+      selectedPickupId: 'GPS', // Auto switch the dropdown to GPS/Custom
     }));
   },
 
@@ -136,6 +140,20 @@ export const useLifeLineStore = create<LifeLineStore>((set, get) => ({
           get().addLog('🏥 Arrived at hospital. Mission complete!', 'SUCCESS');
         }
       }
+    }
+  },
+
+  selectPickup: (pickupId) => {
+    set({ selectedPickupId: pickupId });
+    if (pickupId === 'GPS') {
+      get().addLog('Switched to Live GPS Tracking mode.', 'INFO');
+      return;
+    }
+    const { PICKUP_LOCATIONS } = require('./mapConfig');
+    const pickup = PICKUP_LOCATIONS.find((p: any) => p.id === pickupId);
+    if (pickup) {
+      get().setAmbulanceLocation(pickup.location);
+      get().addLog(`Dispatch origin updated to: ${pickup.name}`, 'INFO');
     }
   },
 
