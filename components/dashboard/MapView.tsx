@@ -24,8 +24,10 @@ export function MapView() {
     signals,
     hospitals,
     currentRoute,
+    gpsActive,
   } = useLifeLineStore();
 
+  const hasCenteredOnGps = useRef(false);
   const [mapError, setMapError] = useState<string | null>(null);
 
   // Initialize Map
@@ -139,6 +141,15 @@ export function MapView() {
     } else {
       ambulanceMarker.current.setLngLat([ambulance.location.lng, ambulance.location.lat]);
 
+      // Synchronize map center with first GPS lock
+      if (gpsActive && !hasCenteredOnGps.current) {
+        map.current.jumpTo({
+          center: [ambulance.location.lng, ambulance.location.lat],
+          zoom: 14,
+        });
+        hasCenteredOnGps.current = true;
+      }
+
       // Smooth camera follow during emergency
       if (ambulance.status === 'EMERGENCY') {
         map.current.easeTo({
@@ -148,7 +159,7 @@ export function MapView() {
         });
       }
     }
-  }, [ambulance.location, ambulance.heading, ambulance.status]);
+  }, [ambulance.location, ambulance.heading, ambulance.status, gpsActive]);
 
   // Update Signal Markers — fully reactive to dynamically generated signals
   useEffect(() => {

@@ -29,23 +29,20 @@ export default function DashboardPage() {
   const [showNotifications, setShowNotifications] = useState(false);
 
   useEffect(() => {
+    // Initial GPS fetch for the dispatcher/driver
     if (typeof window !== 'undefined' && 'geolocation' in navigator) {
       navigator.geolocation.getCurrentPosition(
         (position) => {
-          if (useLifeLineStore.getState().ambulance.status === 'IDLE') {
-            setAmbulanceLocation({
-              lat: position.coords.latitude,
-              lng: position.coords.longitude
-            });
-            setGpsActive(true);
-            addLog('GPS lock acquired. Source node set to device location.', 'SUCCESS');
-          }
+          const { latitude: lat, longitude: lng } = position.coords;
+          setAmbulanceLocation({ lat, lng });
+          setGpsActive(true);
+          addLog(`GPS lock acquired at ${lat.toFixed(4)}, ${lng.toFixed(4)}. Dispatcher synchronized.`, 'SUCCESS');
         },
         (error) => {
-          console.warn('Geolocation failed:', error);
-          addLog('Failed to acquire GPS lock. Please manually fetch GPS if needed.', 'WARNING');
+          console.warn('Initial geolocation failed:', error);
+          addLog('Startup GPS fetch timed out or denied. Using fallback grid coordinates.', 'WARNING');
         },
-        { enableHighAccuracy: true, timeout: 5000, maximumAge: 0 }
+        { enableHighAccuracy: true, timeout: 10000, maximumAge: 0 }
       );
     }
   }, [setAmbulanceLocation, setGpsActive, addLog]);
