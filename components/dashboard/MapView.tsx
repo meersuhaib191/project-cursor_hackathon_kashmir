@@ -80,13 +80,11 @@ export function MapView() {
           hospitals.forEach((hospital) => {
             const el = document.createElement('div');
             el.innerHTML = `
-              <div style="display:flex;flex-direction:column;align-items:center;cursor:pointer;">
-                <div style="background:#3b82f6;border:2px solid white;border-radius:50%;width:32px;height:32px;display:flex;align-items:center;justify-content:center;box-shadow:0 0 12px rgba(59,130,246,0.5);">
-                  <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-                    <path d="M12 6v12M6 12h12"/>
-                  </svg>
+              <div style="display:flex;flex-direction:column;align-items:center;cursor:pointer;filter:drop-shadow(0 4px 10px rgba(0,0,0,0.5));">
+                <div style="background:#2563eb;border:2px solid white;border-radius:6px;width:32px;height:32px;display:flex;align-items:center;justify-content:center;box-shadow:0 0 15px rgba(37,99,235,0.7);transition:all 0.3s ease-in-out;">
+                  <span style="color:white;font-family:'Arial Black', sans-serif;font-weight:900;font-size:20px;line-height:1;margin-top:-1px;">H</span>
                 </div>
-                <div style="background:rgba(0,0,0,0.7);backdrop-filter:blur(4px);font-size:9px;color:white;padding:2px 6px;border-radius:4px;margin-top:4px;white-space:nowrap;font-weight:600;">${hospital.name}</div>
+                <div style="background:rgba(15,23,42,0.9);backdrop-filter:blur(6px);font-size:9px;color:white;padding:3px 8px;border-radius:6px;margin-top:6px;white-space:nowrap;font-weight:700;border:1px solid rgba(255,255,255,0.1);letter-spacing:0.3px;box-shadow:0 4px 12px rgba(0,0,0,0.5);">${hospital.name}</div>
               </div>
             `;
             const marker = new mapboxgl.Marker(el)
