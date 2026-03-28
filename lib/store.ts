@@ -24,6 +24,8 @@ interface LifeLineStore {
   gpsActive: boolean;
   lastRouteCalcLocation: Location | null;
   hasCongestion: boolean;
+  normalRouteEta: number | null;   // seconds — what it would take without emergency
+  timeSaved: number | null;        // seconds — time saved by emergency routing
 
   // Actions
   setGpsActive: (active: boolean) => void;
@@ -69,6 +71,8 @@ export const useLifeLineStore = create<LifeLineStore>((set, get) => ({
   gpsActive: false,
   lastRouteCalcLocation: null,
   hasCongestion: false,
+  normalRouteEta: null,
+  timeSaved: null,
 
   // Actions
   setGpsActive: (active) => {
@@ -118,7 +122,7 @@ export const useLifeLineStore = create<LifeLineStore>((set, get) => ({
         const distToHospital = haversineDistance(location, hospital.location);
         if (distToHospital < 30) {
           if (simulationInterval) clearInterval(simulationInterval);
-          set({ currentRoute: null, hasCongestion: false, signals: [] });
+          set({ currentRoute: null, hasCongestion: false, signals: [], normalRouteEta: null, timeSaved: null });
           set((s) => ({ ambulance: { ...s.ambulance, status: 'ARRIVED' } }));
           get().addLog('🏥 Arrived at hospital. Mission complete!', 'SUCCESS');
         }
@@ -178,8 +182,21 @@ export const useLifeLineStore = create<LifeLineStore>((set, get) => ({
         currentRoute: route,
         isRouteLoading: false,
         lastRouteCalcLocation: { ...ambulance.location },
-        hasCongestion: true, // Simulate traffic upon dispatch start
+        hasCongestion: true,
       });
+
+      // Calculate normal route for comparison (without emergency mode)
+      const normalRoute = await fetchRoute(
+        ambulance.location,
+        hospital.location,
+        false, // standard driving profile
+        ambulance.id,
+        hospital.id
+      );
+      const normalEta = normalRoute ? normalRoute.duration : route.duration * 1.6;
+      const saved = normalEta - route.duration;
+      set({ normalRouteEta: normalEta, timeSaved: saved > 0 ? saved : 0 });
+
       set((s) => ({ ambulance: { ...s.ambulance, status: 'EMERGENCY' } }));
 
       // GENERATE FAKE SIGNALS AT ALL INTERSECTIONS (EVERY ROUTE STEP)
@@ -261,6 +278,8 @@ export const useLifeLineStore = create<LifeLineStore>((set, get) => ({
       lastRouteCalcLocation: null,
       hasCongestion: false,
       signals: [],
+      normalRouteEta: null,
+      timeSaved: null,
     });
     set((s) => ({ ambulance: { ...s.ambulance, status: 'IDLE', speed: 0 } }));
     get().addLog('Dispatch cancelled. Returning to standby.', 'INFO');
