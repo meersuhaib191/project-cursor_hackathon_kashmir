@@ -97,7 +97,16 @@ export function MapView() {
         }
       });
 
+      // Setup Resize Observer to automatically call map resize whenever container dims change
+      const resizeObserver = new ResizeObserver(() => {
+        if (map.current) {
+          map.current.resize();
+        }
+      });
+      resizeObserver.observe(mapContainer.current);
+
       return () => {
+        resizeObserver.disconnect();
         map.current?.remove();
       };
     } catch {
