@@ -5,7 +5,7 @@ import { PICKUP_LOCATIONS } from '@/lib/mapConfig';
 import { Button } from '@/components/ui/Button';
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/Card';
 import { Badge } from '@/components/ui/Badge';
-import { Play, Square, ShieldAlert, Shield, MapPin, Loader2, Navigation, AlertTriangle, Megaphone } from 'lucide-react';
+import { Play, Square, ShieldAlert, Shield, MapPin, Loader2, Navigation, AlertTriangle, Megaphone, Siren, Search } from 'lucide-react';
 
 export function ControlPanel() {
   const {
@@ -18,6 +18,9 @@ export function ControlPanel() {
     gpsActive,
     hasCongestion,
     isBroadcasting,
+    pickupAddress,
+    setPickupAddress,
+    geocodePickupAddress,
     selectPickup,
     selectHospital,
     toggleEmergencyMode,
@@ -89,30 +92,31 @@ export function ControlPanel() {
             </Badge>
           </div>
 
-          {/* Origin Dropdown */}
+          {/* Pickup Address Input */}
           <div className="space-y-1.5 pt-2">
             <label className="text-[10px] uppercase font-bold text-slate-400 tracking-wider">
               <MapPin className="h-3 w-3 inline mr-1" />
-              Pickup Origin
+              Patient Pickup Location
             </label>
-            <select
-              value={selectedPickupId || ''}
-              onChange={(e) => selectPickup(e.target.value)}
-              disabled={isDispatching}
-              className="w-full bg-slate-800/80 border border-slate-700 rounded-lg px-3 py-2 text-sm text-slate-100 focus:outline-none focus:ring-2 focus:ring-blue-500 appearance-none cursor-pointer"
-            >
-              <option value="DEFAULT" disabled>
-                Select pickup point...
-              </option>
-              <option value="GPS" className="text-blue-400 font-semibold">
-                [LIVE] Device GPS
-              </option>
-              {PICKUP_LOCATIONS.map((loc) => (
-                <option key={loc.id} value={loc.id}>
-                  {loc.name}
-                </option>
-              ))}
-            </select>
+            <div className="relative group">
+              <input
+                type="text"
+                placeholder="Enter address or landmark..."
+                value={pickupAddress}
+                onChange={(e) => setPickupAddress(e.target.value)}
+                onKeyDown={(e) => e.key === 'Enter' && geocodePickupAddress()}
+                disabled={isDispatching}
+                className="w-full bg-slate-800/80 border border-slate-700 rounded-lg pl-3 pr-10 py-2 text-sm text-slate-100 placeholder:text-slate-500 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all"
+              />
+              <button
+                onClick={geocodePickupAddress}
+                disabled={isDispatching || !pickupAddress}
+                className="absolute right-2 top-1/2 -translate-y-1/2 p-1 text-slate-400 hover:text-blue-400 disabled:opacity-30 disabled:hover:text-slate-400 transition-colors"
+                title="Search and Set Location"
+              >
+                <Search className="h-4 w-4" />
+              </button>
+            </div>
           </div>
 
           {/* Hospital Dropdown */}
@@ -184,22 +188,32 @@ export function ControlPanel() {
           {/* Dispatch Controls */}
           <div className="grid grid-cols-2 gap-2 pt-1">
             {!isDispatching ? (
-              <Button
-                onClick={startDispatch}
-                variant="emergency"
-                className="w-full col-span-2"
-                disabled={!selectedHospitalId || isRouteLoading}
-              >
+              <div className="flex flex-col gap-2 w-full col-span-2">
                 {isRouteLoading ? (
-                  <>
-                    <Loader2 className="mr-2 h-4 w-4 animate-spin" /> Calculating Route...
-                  </>
+                  <Button variant="secondary" className="w-full opacity-70 cursor-wait" disabled>
+                    <Loader2 className="mr-2 h-4 w-4 animate-spin" /> Calculating Neural Route...
+                  </Button>
                 ) : (
                   <>
-                    <Play className="mr-2 h-4 w-4" /> Start Dispatch
+                    <Button
+                      onClick={() => startDispatch('PICKUP')}
+                      variant="outline"
+                      className="w-full border-blue-500/50 text-blue-400 hover:bg-blue-500/10 h-9 text-xs uppercase font-bold tracking-wider"
+                      disabled={!selectedPickupId || selectedPickupId === 'GPS' || selectedPickupId === 'DEFAULT'}
+                    >
+                      <MapPin className="mr-2 h-3.5 w-3.5" /> Route to Pickup
+                    </Button>
+                    <Button
+                      onClick={() => startDispatch('HOSPITAL')}
+                      variant="emergency"
+                      className="w-full h-10 text-xs uppercase font-bold tracking-wider shadow-[0_0_15px_rgba(220,38,38,0.3)]"
+                      disabled={!selectedHospitalId}
+                    >
+                      <Siren className="mr-2 h-4 w-4" /> Route to Hospital
+                    </Button>
                   </>
                 )}
-              </Button>
+              </div>
             ) : (
               <Button onClick={stopDispatch} variant="destructive" className="w-full col-span-2">
                 <Square className="mr-2 h-4 w-4" /> Cancel Dispatch

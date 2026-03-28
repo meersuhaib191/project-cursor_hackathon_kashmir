@@ -26,6 +26,7 @@ interface LifeLineStore {
   lastRouteCalcLocation: Location | null;
   hasCongestion: boolean;
   isBroadcasting: boolean;
+  pickupAddress: string;
   normalRouteEta: number | null;   // seconds — what it would take without emergency
   timeSaved: number | null;        // seconds — time saved by emergency routing
 
@@ -35,9 +36,11 @@ interface LifeLineStore {
   selectPickup: (pickupId: string) => void;
   selectHospital: (hospitalId: string) => void;
   toggleEmergencyMode: () => void;
-  startDispatch: () => Promise<void>;
+  startDispatch: (targetType: 'PICKUP' | 'HOSPITAL') => Promise<void>;
   stopDispatch: () => void;
   recalculateRoute: () => Promise<void>;
+  setPickupAddress: (address: string) => void;
+  geocodePickupAddress: () => Promise<void>;
   addLog: (message: string, type: ActivityLogEntry['type']) => void;
   broadcastAlert: (message: string) => void;
   setAmbulanceLocation: (location: Location) => void;
@@ -77,6 +80,7 @@ export const useLifeLineStore = create<LifeLineStore>((set, get) => ({
   lastRouteCalcLocation: null,
   hasCongestion: false,
   isBroadcasting: false,
+  pickupAddress: '',
   normalRouteEta: null,
   timeSaved: null,
 
@@ -130,14 +134,21 @@ export const useLifeLineStore = create<LifeLineStore>((set, get) => ({
 
     // Check if arrived at destination
     if (currentRoute) {
-      const hospital = get().hospitals.find((h) => h.id === currentRoute.destinationId);
-      if (hospital) {
-        const distToHospital = haversineDistance(location, hospital.location);
-        if (distToHospital < 30) {
+      const { PICKUP_LOCATIONS } = require('./mapConfig');
+      let targetNode = get().hospitals.find((h) => h.id === currentRoute.destinationId);
+      let isPickup = false;
+      if (!targetNode) {
+        targetNode = PICKUP_LOCATIONS.find((p: any) => p.id === currentRoute.destinationId);
+        isPickup = true;
+      }
+
+      if (targetNode) {
+        const distToNode = haversineDistance(location, targetNode.location);
+        if (distToNode < 30) {
           if (simulationInterval) clearInterval(simulationInterval);
           set({ currentRoute: null, hasCongestion: false, signals: [], normalRouteEta: null, timeSaved: null });
           set((s) => ({ ambulance: { ...s.ambulance, status: 'ARRIVED' } }));
-          get().addLog('🏥 Arrived at hospital. Mission complete!', 'SUCCESS');
+          get().addLog(isPickup ? `👥 Reached patient origin: ${targetNode.name}.` : `🏥 Arrived at hospital. Mission segment complete!`, 'SUCCESS');
         }
       }
     }
@@ -152,8 +163,47 @@ export const useLifeLineStore = create<LifeLineStore>((set, get) => ({
     const { PICKUP_LOCATIONS } = require('./mapConfig');
     const pickup = PICKUP_LOCATIONS.find((p: any) => p.id === pickupId);
     if (pickup) {
-      get().setAmbulanceLocation(pickup.location);
-      get().addLog(`Dispatch origin updated to: ${pickup.name}`, 'INFO');
+      get().addLog(`Target Pickup Location set: ${pickup.name}. Ready for routing.`, 'INFO');
+    }
+  },
+
+  setPickupAddress: (address) => set({ pickupAddress: address }),
+
+  geocodePickupAddress: async () => {
+    const { pickupAddress } = get();
+    if (!pickupAddress || pickupAddress.trim().length < 3) return;
+
+    try {
+      const response = await fetch(
+        `https://api.mapbox.com/geocoding/v5/mapbox.places/${encodeURIComponent(pickupAddress)}.json?proximity=74.79,34.08&bbox=74.75,34.05,74.85,34.12&access_token=${process.env.NEXT_PUBLIC_MAPBOX_TOKEN}`
+      );
+      const data = await response.json();
+      
+      if (data.features && data.features.length > 0) {
+        const feature = data.features[0];
+        const [lng, lat] = feature.center;
+        
+        // Generate a random stable ID for this custom point
+        const customId = `CUSTOM-${Math.random().toString(36).substring(7)}`;
+        
+        // Use a temporary 'PICKUP' landmark in the store if needed, 
+        // but for now we just select it by location
+        set({ selectedPickupId: customId });
+        
+        // We'll hijack the selection logic by pushing this to a temporary store state or just setting the ambulance location to this new point
+        // For 'Route to Pickup' to work, we need an ID that the startDispatch can find.
+        // Let's modify startDispatch to handle custom coordinates.
+        
+        get().addLog(`📍 Location identified: ${feature.place_name}`, 'SUCCESS');
+        
+        // Temporarily store the coordinate for the 'PICKUP' route
+        (get() as any).customPickupLocation = { lat, lng };
+      } else {
+        get().addLog('❌ Could not find that location in Srinagar. Try a more specific street name.', 'WARNING');
+      }
+    } catch (err) {
+      console.error('Geocoding error:', err);
+      get().addLog('❌ Connection error during location search.', 'WARNING');
     }
   },
 
@@ -180,25 +230,41 @@ export const useLifeLineStore = create<LifeLineStore>((set, get) => ({
     }
   },
 
-  startDispatch: async () => {
-    const { ambulance, selectedHospitalId, hospitals, emergencyMode } = get();
-    if (!selectedHospitalId) {
-      get().addLog('⚠️ Select a hospital destination first!', 'WARNING');
-      return;
+  startDispatch: async (targetType) => {
+    const { ambulance, selectedHospitalId, selectedPickupId, hospitals, emergencyMode } = get();
+    
+    let targetNode: any = null;
+    if (targetType === 'HOSPITAL') {
+      if (!selectedHospitalId) {
+        get().addLog('⚠️ Select a hospital destination first!', 'WARNING');
+        return;
+      }
+      targetNode = hospitals.find((h) => h.id === selectedHospitalId);
+    } else if (targetType === 'PICKUP') {
+      const customLoc = (get() as any).customPickupLocation;
+      if (customLoc) {
+        targetNode = { id: 'CUSTOM', name: get().pickupAddress, location: customLoc };
+      } else {
+        if (!selectedPickupId || selectedPickupId === 'GPS' || selectedPickupId === 'DEFAULT') {
+          get().addLog('⚠️ Enter and search for a pickup location in the box first!', 'WARNING');
+          return;
+        }
+        const { PICKUP_LOCATIONS } = require('./mapConfig');
+        targetNode = PICKUP_LOCATIONS.find((p: any) => p.id === selectedPickupId);
+      }
     }
 
-    const hospital = hospitals.find((h) => h.id === selectedHospitalId);
-    if (!hospital) return;
+    if (!targetNode) return;
 
     set({ isRouteLoading: true });
-    get().addLog(`🚑 Dispatching to ${hospital.name}...`, 'EMERGENCY');
+    get().addLog(`🚑 Dispatching to ${targetNode.name}...`, 'EMERGENCY');
 
     const route = await fetchRoute(
       ambulance.location,
-      hospital.location,
+      targetNode.location,
       emergencyMode,
       ambulance.id,
-      hospital.id
+      targetNode.id
     );
 
     if (route) {
@@ -229,10 +295,10 @@ export const useLifeLineStore = create<LifeLineStore>((set, get) => ({
       // Calculate normal route for comparison (without emergency mode)
       const normalRoute = await fetchRoute(
         ambulance.location,
-        hospital.location,
+        targetNode.location,
         false, // standard driving profile
         ambulance.id,
-        hospital.id
+        targetNode.id
       );
       const normalEta = normalRoute ? normalRoute.duration : route.duration * 1.6;
       const saved = normalEta - route.duration;
@@ -292,11 +358,15 @@ export const useLifeLineStore = create<LifeLineStore>((set, get) => ({
         const newLocation = { lng: coords[0], lat: coords[1] };
         
         if (forcedArrivalCoordinate) {
-          // Snap directly to the hospital pin to artificially trigger the < 30m arrival threshold gracefully
-          const targetHospital = get().hospitals.find(h => h.id === currentRoute.destinationId);
-          if (targetHospital) {
-            newLocation.lat = targetHospital.location.lat;
-            newLocation.lng = targetHospital.location.lng;
+          // Snap directly to the target pin (pickup or hospital) to artificially trigger the < 30m arrival threshold
+          const { PICKUP_LOCATIONS } = require('./mapConfig');
+          let targetPin = get().hospitals.find(h => h.id === currentRoute.destinationId)?.location;
+          if (!targetPin) {
+            targetPin = PICKUP_LOCATIONS.find((p: any) => p.id === currentRoute.destinationId)?.location;
+          }
+          if (targetPin) {
+            newLocation.lat = targetPin.lat;
+            newLocation.lng = targetPin.lng;
           }
         }
         
