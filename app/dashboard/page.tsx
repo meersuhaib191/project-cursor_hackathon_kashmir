@@ -50,18 +50,58 @@ export default function DashboardPage() {
 
   return (
     <div className="flex h-screen bg-slate-950 text-slate-100 overflow-hidden font-sans">
-      {/* Sidebar / Sidebar Navigation (Slim) */}
-      <aside className="w-16 border-r border-slate-800 flex flex-col items-center py-6 space-y-8 glass">
-        <div className="bg-red-600 p-2 rounded-xl shadow-[0_0_15px_rgba(220,38,38,0.4)]">
-          <Siren className="h-6 w-6 text-white" />
+      {/* Sidebar Navigation */}
+      <aside className="w-64 border-r border-slate-800 bg-slate-900/50 backdrop-blur-xl flex flex-col py-6 px-4 space-y-6 flex-shrink-0 z-30">
+        {/* Logo Area */}
+        <div className="flex items-center space-x-3 px-2 mb-2">
+          <div className="bg-red-600 p-2 rounded-xl shadow-[0_0_15px_rgba(220,38,38,0.4)]">
+            <Siren className="h-5 w-5 text-white" />
+          </div>
+          <span className="font-bold text-lg tracking-tight italic text-slate-100">LifeLine AI</span>
         </div>
-        <nav className="flex flex-col space-y-6 flex-1">
-          <button className="p-2 text-blue-500 bg-blue-500/10 rounded-lg">
+
+        {/* Navigation Links */}
+        <nav className="flex flex-col space-y-2 flex-1">
+          <button className="flex items-center space-x-3 p-3 w-full text-blue-400 bg-blue-500/10 border border-blue-500/20 rounded-xl transition-all">
             <Activity className="h-5 w-5" />
+            <span className="font-semibold text-sm">Live Dispatch</span>
           </button>
-          <button className="p-2 text-slate-500 hover:text-slate-300 transition-colors">
-            <Bell className="h-5 w-5" />
+          <button className="flex items-center space-x-3 p-3 w-full text-slate-400 hover:text-slate-200 hover:bg-slate-800/80 rounded-xl transition-all">
+            <div className="relative">
+              <Bell className="h-5 w-5" />
+              <div className="absolute top-0 right-0 h-2 w-2 bg-red-500 rounded-full border border-slate-900 animate-pulse"></div>
+            </div>
+            <span className="font-medium text-sm">Notifications</span>
           </button>
+
+          {/* Next Pickup Details Card */}
+          <div className="pt-8">
+            <h3 className="text-[10px] font-bold text-slate-500 uppercase tracking-widest mb-3 px-2">Pending Schedule</h3>
+            <div className="bg-slate-900/60 border border-slate-700/50 rounded-xl p-4 flex flex-col space-y-3 relative overflow-hidden group hover:border-blue-500/30 transition-colors">
+              <div className="absolute top-0 right-0 w-16 h-16 bg-blue-500/10 blur-xl rounded-full"></div>
+              
+              <div className="flex items-start justify-between relative z-10">
+                <Badge variant="secondary" className="bg-blue-500/20 text-blue-400 border-blue-500/30 text-[9px] px-1.5 py-0">NEXT PICKUP</Badge>
+                <span className="text-[10px] text-slate-400">In 12 mins</span>
+              </div>
+              
+              <div className="flex flex-col space-y-1 relative z-10 mt-2">
+                <span className="text-sm font-bold text-slate-200">Cardiac Emergency (Priority 1)</span>
+                <span className="text-xs text-slate-400">Pickup: Rajbagh Sector 4, House 112</span>
+                <span className="text-xs text-slate-400 mt-1">Drop: SMHS Hospital ICU</span>
+              </div>
+              
+              <div className="flex items-center space-x-2 mt-3 pt-3 border-t border-slate-800/80 relative z-10">
+                <div className="h-6 w-6 rounded-full bg-slate-800 flex items-center justify-center border border-slate-700">
+                  <span className="text-[9px] font-bold">PT</span>
+                </div>
+                <div className="flex flex-col">
+                  <span className="text-[10px] font-bold">Male, 58 yrs</span>
+                  <span className="text-[9px] text-slate-500">History of Arrhythmia</span>
+                </div>
+              </div>
+            </div>
+          </div>
         </nav>
       </aside>
 
