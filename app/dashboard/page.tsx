@@ -50,14 +50,14 @@ export default function DashboardPage() {
   }, [setAmbulanceLocation, setGpsActive, addLog]);
 
   return (
-    <div className="flex h-screen bg-slate-950 text-slate-100 overflow-hidden font-sans">
+    <div className="flex flex-col md:flex-row h-[100dvh] bg-slate-950 text-slate-100 overflow-hidden font-sans">
       {/* Sidebar Navigation (Slim) */}
-      <aside className="w-16 border-r border-slate-800 bg-slate-900/50 backdrop-blur-xl flex flex-col items-center py-6 space-y-8 flex-shrink-0 z-30">
+      <aside className="w-full md:w-16 h-16 md:h-full border-b md:border-b-0 md:border-r border-slate-800 bg-slate-900/50 backdrop-blur-xl flex flex-row md:flex-col items-center justify-between md:py-6 px-4 md:px-0 space-y-0 md:space-y-8 flex-shrink-0 z-30">
         <div className="bg-red-600 p-2 rounded-xl shadow-[0_0_15px_rgba(220,38,38,0.4)]">
           <Siren className="h-5 w-5 text-white" />
         </div>
 
-        <nav className="flex flex-col space-y-6 flex-1 items-center w-full relative">
+        <nav className="flex flex-row md:flex-col space-y-0 md:space-y-6 flex-1 items-center justify-end md:justify-start w-full md:relative space-x-4 md:space-x-0">
           <button className="p-2 text-blue-400 bg-blue-500/10 border border-blue-500/20 rounded-xl transition-all">
             <Activity className="h-5 w-5" />
           </button>
@@ -73,7 +73,7 @@ export default function DashboardPage() {
 
             {/* Notifications Popover */}
             {showNotifications && (
-              <div className="absolute left-14 top-0 w-80 bg-slate-900/95 backdrop-blur-3xl border border-slate-700/80 rounded-2xl shadow-2xl p-5 ml-4 flex flex-col animate-in fade-in slide-in-from-left-4 duration-200">
+              <div className="absolute right-0 top-14 md:left-14 md:top-0 w-80 max-w-[90vw] bg-slate-900/95 backdrop-blur-3xl border border-slate-700/80 rounded-2xl shadow-2xl p-5 md:ml-4 flex flex-col animate-in fade-in zoom-in-95 duration-200 z-50">
                 <div className="flex justify-between items-center mb-4">
                   <h3 className="text-xs font-bold text-slate-100 uppercase tracking-widest">Pending Dispatches</h3>
                   <Badge variant="emergency" className="text-[9px] px-1.5 py-0 h-4">1 NEW</Badge>
@@ -110,24 +110,24 @@ export default function DashboardPage() {
       </aside>
 
       {/* Main Content Area */}
-      <main className="flex-1 flex overflow-hidden">
+      <main className="flex-1 flex flex-col md:flex-row overflow-hidden">
         {/* Map View Section */}
-        <section className="flex-1 flex flex-col relative">
+        <section className="flex-none h-[45vh] md:h-auto md:flex-1 flex flex-col relative">
           {/* Dashboard Header Overlay */}
-          <header className="absolute top-0 left-0 right-0 p-6 z-20 flex justify-between items-start pointer-events-none">
-            <div className="bg-slate-900/40 backdrop-blur-md border border-slate-700/50 rounded-2xl p-4 flex items-center shadow-2xl pointer-events-auto">
-              <div className="h-10 w-10 bg-red-600/20 rounded-lg flex items-center justify-center mr-4 border border-red-500/30">
+          <header className="absolute top-0 left-0 right-0 p-3 md:p-6 z-20 flex justify-center md:justify-between items-start pointer-events-none">
+            <div className="bg-slate-900/60 md:bg-slate-900/40 backdrop-blur-md border border-slate-700/50 rounded-2xl p-2.5 md:p-4 flex items-center shadow-2xl pointer-events-auto scale-95 md:scale-100 origin-top">
+              <div className="hidden sm:flex h-10 w-10 bg-red-600/20 rounded-lg items-center justify-center mr-4 border border-red-500/30">
                 <Ambulance className="h-6 w-6 text-red-500" />
               </div>
-              <div className="flex flex-col pr-4 border-r border-slate-700/50">
-                <h1 className="text-lg font-bold tracking-tight">LifeLine AI</h1>
-                <span className="text-[10px] uppercase text-slate-500 font-bold tracking-widest">Ambulance Routing System</span>
+              <div className="flex flex-col pr-3 md:pr-4 border-r border-slate-700/50">
+                <h1 className="text-base md:text-lg font-bold tracking-tight leading-tight">LifeLine AI</h1>
+                <span className="hidden sm:block text-[8px] md:text-[10px] uppercase text-slate-500 font-bold tracking-widest">Routing System</span>
               </div>
-              <div className="pl-4 flex flex-col">
-                <Badge variant={ambulance.status === 'EMERGENCY' ? 'emergency' : 'secondary'} className="text-[9px] h-4 mb-1">
+              <div className="pl-3 md:pl-4 flex flex-col justify-center">
+                <Badge variant={ambulance.status === 'EMERGENCY' ? 'emergency' : 'secondary'} className="text-[8px] md:text-[9px] h-3.5 md:h-4 mb-0.5 md:mb-1 w-max">
                   {ambulance.status === 'EMERGENCY' ? 'CRITICAL DISPATCH' : 'SYSTEM READY'}
                 </Badge>
-                <span className="text-[10px] text-slate-400 font-medium">Node: SRINAGAR-HQ-01</span>
+                <span className="text-[9px] md:text-[10px] text-slate-400 font-medium hidden sm:inline">Node: SRINAGAR-HQ-01</span>
               </div>
             </div>
           </header>
@@ -136,7 +136,7 @@ export default function DashboardPage() {
         </section>
 
         {/* Right Info Panels */}
-        <aside className="w-96 border-l border-slate-800 bg-slate-900/50 backdrop-blur-xl flex flex-col p-6 space-y-0 overflow-y-auto overflow-x-hidden scrollbar-hide">
+        <aside className="w-full md:w-96 border-t md:border-t-0 md:border-l border-slate-800 bg-slate-950 md:bg-slate-900/50 backdrop-blur-xl flex flex-col p-4 md:p-6 pb-24 md:pb-6 space-y-0 overflow-y-auto overflow-x-hidden scrollbar-hide flex-1 md:flex-none z-10 md:z-auto">
           <ControlPanel />
           <StatsPanel />
           <SignalList />
