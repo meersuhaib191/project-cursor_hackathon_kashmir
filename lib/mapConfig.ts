@@ -25,27 +25,27 @@ export const PICKUP_LOCATIONS = [
 ];
 
 export const HOSPITALS = [
-  { id: 'H1', name: 'Sher-i-Kashmir Institute (SKIMS)', location: { lat: 34.1331, lng: 74.8021 } },
-  { id: 'H2', name: 'SMHS Hospital', location: { lat: 34.0827, lng: 74.7937 } },
-  { id: 'H3', name: 'Lalla Ded Hospital', location: { lat: 34.0722, lng: 74.8016 } },
-  { id: 'H4', name: 'Bone and Joint Hospital', location: { lat: 34.0681, lng: 74.7825 } },
-  { id: 'H5', name: 'JVC SKIMS (Bemina)', location: { lat: 34.0750, lng: 74.7600 } },
-  { id: 'H6', name: 'JLNM Hospital (Rainawari)', location: { lat: 34.0950, lng: 74.8190 } },
-  { id: 'H7', name: 'CD Hospital (Dalgate)', location: { lat: 34.0850, lng: 74.8320 } },
-  { id: 'H8', name: 'Kashmir Nursing Home (Gupkar)', location: { lat: 34.0750, lng: 74.8350 } },
-  { id: 'H9', name: 'Modern Hospital (Rajbagh)', location: { lat: 34.0670, lng: 74.8080 } },
-  { id: 'H10', name: 'Florence Hospital (Chanapora)', location: { lat: 34.0450, lng: 74.7900 } },
-  { id: 'H11', name: 'Noora Hospital (Umerabad)', location: { lat: 34.0980, lng: 74.7500 } },
-  { id: 'H12', name: 'Khyber Medical Institute', location: { lat: 34.0810, lng: 74.8160 } },
-  { id: 'H13', name: 'City Hospital (Tengpora)', location: { lat: 34.0650, lng: 74.7800 } },
-  { id: 'H14', name: 'Govt Psychiatric Hospital', location: { lat: 34.0960, lng: 74.8210 } },
-  { id: 'H15', name: 'Medicare Hospital (Karan Nagar)', location: { lat: 34.0830, lng: 74.7950 } },
-  { id: 'H16', name: 'Ramzana Hospital (Gogji Bagh)', location: { lat: 34.0690, lng: 74.7980 } },
-  { id: 'H17', name: 'Valley Healthcare (Sonwar)', location: { lat: 34.0700, lng: 74.8430 } },
-  { id: 'H18', name: 'Star Hospital (Sanat Nagar)', location: { lat: 34.0480, lng: 74.8000 } },
-  { id: 'H19', name: 'Shifa Medical Center', location: { lat: 34.0730, lng: 74.7950 } },
-  { id: 'H20', name: 'Apex Hospital (Hyderpora)', location: { lat: 34.0580, lng: 74.8050 } },
-  { id: 'H21', name: 'Ahmad Hospital (Nowgam)', location: { lat: 34.0450, lng: 74.8200 } }
+  { id: 'H1', name: 'Sher-i-Kashmir Institute (SKIMS)', location: { lat: 34.1331, lng: 74.8021 }, type: 'SPECIALIST' },
+  { id: 'H2', name: 'SMHS Hospital', location: { lat: 34.0827, lng: 74.7937 }, type: 'GENERAL' },
+  { id: 'H3', name: 'Lalla Ded Hospital', location: { lat: 34.0722, lng: 74.8016 }, type: 'SPECIALIST' },
+  { id: 'H4', name: 'Bone and Joint Hospital', location: { lat: 34.0681, lng: 74.7825 }, type: 'SPECIALIST' },
+  { id: 'H5', name: 'JVC SKIMS (Bemina)', location: { lat: 34.0750, lng: 74.7600 }, type: 'GENERAL' },
+  { id: 'H6', name: 'JLNM Hospital (Rainawari)', location: { lat: 34.0950, lng: 74.8190 }, type: 'GENERAL' },
+  { id: 'H7', name: 'CD Hospital (Dalgate)', location: { lat: 34.0850, lng: 74.8320 }, type: 'SPECIALIST' },
+  { id: 'H8', name: 'Kashmir Nursing Home (Gupkar)', location: { lat: 34.0750, lng: 74.8350 }, type: 'CLINIC' },
+  { id: 'H9', name: 'Modern Hospital (Rajbagh)', location: { lat: 34.0670, lng: 74.8080 }, type: 'GENERAL' },
+  { id: 'H10', name: 'Florence Hospital (Chanapora)', location: { lat: 34.0450, lng: 74.7900 }, type: 'GENERAL' },
+  { id: 'H11', name: 'Noora Hospital (Umerabad)', location: { lat: 34.0980, lng: 74.7500 }, type: 'GENERAL' },
+  { id: 'H12', name: 'Khyber Medical Institute', location: { lat: 34.0810, lng: 74.8160 }, type: 'SPECIALIST' },
+  { id: 'H13', name: 'City Hospital (Tengpora)', location: { lat: 34.0650, lng: 74.7800 }, type: 'GENERAL' },
+  { id: 'H14', name: 'Govt Psychiatric Hospital', location: { lat: 34.0960, lng: 74.8210 }, type: 'SPECIALIST' },
+  { id: 'H15', name: 'Medicare Hospital (Karan Nagar)', location: { lat: 34.0830, lng: 74.7950 }, type: 'GENERAL' },
+  { id: 'H16', name: 'Ramzana Hospital (Gogji Bagh)', location: { lat: 34.0690, lng: 74.7980 }, type: 'GENERAL' },
+  { id: 'H17', name: 'Valley Healthcare (Sonwar)', location: { lat: 34.0700, lng: 74.8430 }, type: 'CLINIC' },
+  { id: 'H18', name: 'Star Hospital (Sanat Nagar)', location: { lat: 34.0480, lng: 74.8000 }, type: 'GENERAL' },
+  { id: 'H19', name: 'Shifa Medical Center', location: { lat: 34.0730, lng: 74.7950 }, type: 'CLINIC' },
+  { id: 'H20', name: 'Apex Hospital (Hyderpora)', location: { lat: 34.0580, lng: 74.8050 }, type: 'GENERAL' },
+  { id: 'H21', name: 'Ahmad Hospital (Nowgam)', location: { lat: 34.0450, lng: 74.8200 }, type: 'GENERAL' }
 ];
 
 export const TRAFFIC_SIGNALS = [

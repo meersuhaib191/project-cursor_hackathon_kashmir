@@ -81,10 +81,38 @@ export function MapView() {
           // Add hospital markers
           hospitals.forEach((hospital) => {
             const el = document.createElement('div');
+            
+            // Define marker style based on hospital type
+            let iconHtml = '';
+            let bgColor = '';
+            let glowColor = '';
+            
+            switch (hospital.type) {
+              case 'SPECIALIST':
+                bgColor = '#2563eb'; // Blue
+                glowColor = 'rgba(37,99,235,0.7)';
+                iconHtml = '<span style="color:white;font-family:\'Arial Black\', sans-serif;font-weight:900;font-size:20px;line-height:1;margin-top:-1px;">H</span>';
+                break;
+              case 'GENERAL':
+                bgColor = '#ef4444'; // Red
+                glowColor = 'rgba(239,68,68,0.7)';
+                iconHtml = '<svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="white" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14M5 12h14"/></svg>';
+                break;
+              case 'CLINIC':
+                bgColor = '#0891b2'; // Teal/Cyan
+                glowColor = 'rgba(8,145,178,0.7)';
+                iconHtml = '<svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="white" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M11 2a2 2 0 0 0-2 2v5H4a2 2 0 0 0-2 2v2c0 1.1.9 2 2 2h5v5c0 1.1.9 2 2 2h2a2 2 0 0 0 2-2v-5h5a2 2 0 0 0 2-2v-2a2 2 0 0 0-2-2h-5V4a2 2 0 0 0-2-2h-2z"/></svg>';
+                break;
+              default:
+                bgColor = '#64748b'; // Slate
+                glowColor = 'rgba(100,116,139,0.7)';
+                iconHtml = '<span style="color:white;font-weight:bold;">M</span>';
+            }
+
             el.innerHTML = `
               <div style="display:flex;flex-direction:column;align-items:center;cursor:pointer;filter:drop-shadow(0 4px 10px rgba(0,0,0,0.5));">
-                <div style="background:#2563eb;border:2px solid white;border-radius:6px;width:32px;height:32px;display:flex;align-items:center;justify-content:center;box-shadow:0 0 15px rgba(37,99,235,0.7);transition:all 0.3s ease-in-out;">
-                  <span style="color:white;font-family:'Arial Black', sans-serif;font-weight:900;font-size:20px;line-height:1;margin-top:-1px;">H</span>
+                <div style="background:${bgColor};border:2px solid white;border-radius:6px;width:32px;height:32px;display:flex;align-items:center;justify-content:center;box-shadow:0 0 15px ${glowColor};transition:all 0.3s ease-in-out;">
+                  ${iconHtml}
                 </div>
                 <div style="background:rgba(15,23,42,0.9);backdrop-filter:blur(6px);font-size:9px;color:white;padding:3px 8px;border-radius:6px;margin-top:6px;white-space:nowrap;font-weight:700;border:1px solid rgba(255,255,255,0.1);letter-spacing:0.3px;box-shadow:0 4px 12px rgba(0,0,0,0.5);">${hospital.name}</div>
               </div>
