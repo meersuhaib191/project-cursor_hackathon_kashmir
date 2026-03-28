@@ -26,6 +26,7 @@ interface LifeLineStore {
   lastRouteCalcLocation: Location | null;
   hasCongestion: boolean;
   isBroadcasting: boolean;
+  isDispatching: boolean;
   pickupAddress: string;
   activeTarget: { id: string, name: string, location: Location } | null;
   normalRouteEta: number | null;   // seconds — what it would take without emergency
@@ -81,6 +82,7 @@ export const useLifeLineStore = create<LifeLineStore>((set, get) => ({
   lastRouteCalcLocation: null,
   hasCongestion: false,
   isBroadcasting: false,
+  isDispatching: false,
   pickupAddress: '',
   activeTarget: null,
   normalRouteEta: null,
@@ -145,7 +147,8 @@ export const useLifeLineStore = create<LifeLineStore>((set, get) => ({
           signals: [], 
           normalRouteEta: null, 
           timeSaved: null,
-          activeTarget: null // Reset target on arrival
+          activeTarget: null, // Reset target on arrival
+          isDispatching: false
         });
         set((s) => ({ ambulance: { ...s.ambulance, status: 'ARRIVED' } }));
         const isPickup = activeTarget.id === 'CUSTOM' || activeTarget.id.startsWith('P');
@@ -256,7 +259,7 @@ export const useLifeLineStore = create<LifeLineStore>((set, get) => ({
 
     if (!targetNode) return;
 
-    set({ isRouteLoading: true, activeTarget: targetNode });
+    set({ isRouteLoading: true, activeTarget: targetNode, isDispatching: true });
     get().addLog(`🚑 Dispatching to ${targetNode.name}...`, 'EMERGENCY');
 
     const route = await fetchRoute(
@@ -388,7 +391,7 @@ export const useLifeLineStore = create<LifeLineStore>((set, get) => ({
         'SUCCESS'
       );
     } else {
-      set({ isRouteLoading: false });
+      set({ isRouteLoading: false, isDispatching: false });
       get().addLog('❌ Failed to calculate route. Check network/API.', 'WARNING');
     }
   },
@@ -400,6 +403,7 @@ export const useLifeLineStore = create<LifeLineStore>((set, get) => ({
       lastRouteCalcLocation: null,
       hasCongestion: false,
       isBroadcasting: false,
+      isDispatching: false,
       activeTarget: null,
       signals: [],
       normalRouteEta: null,
