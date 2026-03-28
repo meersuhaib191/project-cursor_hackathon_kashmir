@@ -24,7 +24,29 @@ const MapView = dynamic(() => import('@/components/dashboard/MapView').then(mod 
 });
 
 export default function DashboardPage() {
-  const { ambulance } = useLifeLineStore();
+  const { ambulance, setAmbulanceLocation, setGpsActive, addLog } = useLifeLineStore();
+
+  useEffect(() => {
+    if (typeof window !== 'undefined' && 'geolocation' in navigator) {
+      navigator.geolocation.getCurrentPosition(
+        (position) => {
+          if (useLifeLineStore.getState().ambulance.status === 'IDLE') {
+            setAmbulanceLocation({
+              lat: position.coords.latitude,
+              lng: position.coords.longitude
+            });
+            setGpsActive(true);
+            addLog('GPS lock acquired. Source node set to device location.', 'SUCCESS');
+          }
+        },
+        (error) => {
+          console.warn('Geolocation failed:', error);
+          addLog('Failed to acquire GPS lock. Using default grid location.', 'WARNING');
+        },
+        { enableHighAccuracy: true, timeout: 10000, maximumAge: 0 }
+      );
+    }
+  }, [setAmbulanceLocation, setGpsActive, addLog]);
 
   return (
     <div className="flex h-screen bg-slate-950 text-slate-100 overflow-hidden font-sans">

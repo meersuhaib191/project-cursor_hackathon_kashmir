@@ -37,6 +37,7 @@ interface LifeLineStore {
   recalculateRoute: () => Promise<void>;
   addLog: (message: string, type: ActivityLogEntry['type']) => void;
   broadcastAlert: (message: string) => void;
+  setAmbulanceLocation: (location: Location) => void;
 }
 
 let simulationInterval: any = null;
@@ -80,6 +81,12 @@ export const useLifeLineStore = create<LifeLineStore>((set, get) => ({
     if (active) {
       get().addLog('GPS lock acquired. Tracking driver location.', 'SUCCESS');
     }
+  },
+
+  setAmbulanceLocation: (location) => {
+    set((state) => ({
+      ambulance: { ...state.ambulance, location },
+    }));
   },
 
   updateDriverLocation: (location, heading, speed) => {
