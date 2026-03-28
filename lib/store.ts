@@ -248,12 +248,23 @@ export const useLifeLineStore = create<LifeLineStore>((set, get) => ({
         // Jump ahead by 5 coordinates
         currentSimIndex += 5;
         
-        if (currentSimIndex >= currentRoute.geometry.coordinates.length) {
+        let forcedArrivalCoordinate = false;
+        if (currentSimIndex >= currentRoute.geometry.coordinates.length - 1) {
           currentSimIndex = currentRoute.geometry.coordinates.length - 1;
+          forcedArrivalCoordinate = true;
         }
 
         const coords = currentRoute.geometry.coordinates[currentSimIndex];
         const newLocation = { lng: coords[0], lat: coords[1] };
+        
+        if (forcedArrivalCoordinate) {
+          // Snap directly to the hospital pin to artificially trigger the < 30m arrival threshold gracefully
+          const targetHospital = get().hospitals.find(h => h.id === currentRoute.destinationId);
+          if (targetHospital) {
+            newLocation.lat = targetHospital.location.lat;
+            newLocation.lng = targetHospital.location.lng;
+          }
+        }
         
         let heading = ambulance.heading;
         if (currentSimIndex > 0) {
