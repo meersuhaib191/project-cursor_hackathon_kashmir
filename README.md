@@ -65,6 +65,8 @@ Emergency vehicles in urban areas frequently get stuck at red traffic signals an
 
 ## 5. Features Implemented
 
+![LifeLine AI Dashboard](/public/screenshots/dashboard.png)
+
 ### 5.1 Interactive 3D City Map
 - Full 3D building extrusions for Srinagar city
 - Dark-themed satellite-style map with smooth camera animations
@@ -79,6 +81,9 @@ Emergency vehicles in urban areas frequently get stuck at red traffic signals an
 - Route rendered as a glowing green line with blur effects
 
 ### 5.3 AI Traffic Signal Management
+
+![Smart Routing and Comparison](/public/screenshots/routing.png)
+
 - **Dynamic signal generation** at every intersection along the computed route
 - Signals placed at actual road maneuver points (turns, forks, roundabouts)
 - **Automatic RED → GREEN transition** when ambulance reaches within 300 meters
