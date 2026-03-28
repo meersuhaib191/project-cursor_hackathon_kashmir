@@ -15,6 +15,7 @@ export function ControlPanel() {
     isRouteLoading,
     gpsActive,
     hasCongestion,
+    isBroadcasting,
     selectHospital,
     toggleEmergencyMode,
     startDispatch,
@@ -122,22 +123,31 @@ export function ControlPanel() {
 
           {/* Congestion Alert & Broadcast */}
           {hasCongestion && isDispatching && (
-            <div className="bg-yellow-500/10 border border-yellow-500/50 rounded-lg p-3 flex flex-col space-y-2 relative overflow-hidden">
+            <div className="bg-yellow-500/10 border border-yellow-500/50 rounded-lg p-3 flex flex-col space-y-2 relative overflow-hidden animate-in slide-in-from-right-4 fade-in duration-300 shadow-lg">
               <div className="absolute top-0 right-0 w-16 h-16 bg-yellow-500/20 blur-xl rounded-full" />
               <div className="flex items-center gap-2">
                 <AlertTriangle className="h-4 w-4 text-yellow-500 animate-pulse" />
-                <span className="text-xs font-bold text-yellow-500">SEVERE CONGESTION</span>
+                <span className="text-[11px] font-bold text-yellow-500 uppercase tracking-widest">Congestion Ahead</span>
               </div>
               <p className="text-[10px] text-yellow-400/80 leading-snug">
-                Heavy traffic flow blocking current routed path. Broadcast clearance required.
+                AI Scanner detected bottleneck on current route. Broadcast alert recommended.
               </p>
               <Button 
                 variant="outline" 
                 size="sm" 
-                className="w-full mt-1 bg-yellow-500/20 hover:bg-yellow-500/30 text-yellow-500 border-yellow-500/50 text-[10px] uppercase tracking-wider font-bold"
+                className={`w-full mt-1 border-yellow-500/50 text-[10px] uppercase tracking-wider font-bold transition-all ${
+                  isBroadcasting 
+                    ? 'bg-yellow-500/40 text-yellow-100' 
+                    : 'bg-yellow-500/20 hover:bg-yellow-500/30 text-yellow-500'
+                }`}
+                disabled={isBroadcasting}
                 onClick={() => broadcastAlert("clear the road and give way as ambulance is approaching")}
               >
-                <Megaphone className="mr-2 h-3 w-3" /> Broadcast Clearance
+                {isBroadcasting ? (
+                  <><Loader2 className="mr-2 h-3 w-3 animate-spin" /> Transmitting Audio...</>
+                ) : (
+                  <><Megaphone className="mr-2 h-3 w-3" /> Broadcast Clearance</>
+                )}
               </Button>
             </div>
           )}

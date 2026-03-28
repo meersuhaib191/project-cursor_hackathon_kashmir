@@ -24,6 +24,7 @@ interface LifeLineStore {
   gpsActive: boolean;
   lastRouteCalcLocation: Location | null;
   hasCongestion: boolean;
+  isBroadcasting: boolean;
   normalRouteEta: number | null;   // seconds — what it would take without emergency
   timeSaved: number | null;        // seconds — time saved by emergency routing
 
@@ -72,6 +73,7 @@ export const useLifeLineStore = create<LifeLineStore>((set, get) => ({
   gpsActive: false,
   lastRouteCalcLocation: null,
   hasCongestion: false,
+  isBroadcasting: false,
   normalRouteEta: null,
   timeSaved: null,
 
@@ -189,8 +191,22 @@ export const useLifeLineStore = create<LifeLineStore>((set, get) => ({
         currentRoute: route,
         isRouteLoading: false,
         lastRouteCalcLocation: { ...ambulance.location },
-        hasCongestion: true,
+        hasCongestion: false,
+        isBroadcasting: false,
       });
+
+      // Randomly decide if this specific dispatch will encounter unexpected traffic (40% chance)
+      const willEncounterCongestion = Math.random() < 0.4;
+      if (willEncounterCongestion) {
+        // Trigger the congestion alert 4 to 8 seconds into the dispatch to make it feel "real-time" and dynamic
+        const delay = 4000 + Math.random() * 4000;
+        setTimeout(() => {
+          if (get().ambulance.status === 'EMERGENCY') {
+            set({ hasCongestion: true });
+            get().addLog('⚠️ AI Scanner: Unexpected severe bottleneck detected ahead. Broadcast available.', 'WARNING');
+          }
+        }, delay);
+      }
 
       // Calculate normal route for comparison (without emergency mode)
       const normalRoute = await fetchRoute(
@@ -295,6 +311,7 @@ export const useLifeLineStore = create<LifeLineStore>((set, get) => ({
       currentRoute: null,
       lastRouteCalcLocation: null,
       hasCongestion: false,
+      isBroadcasting: false,
       signals: [],
       normalRouteEta: null,
       timeSaved: null,
@@ -337,11 +354,12 @@ export const useLifeLineStore = create<LifeLineStore>((set, get) => ({
   },
 
   broadcastAlert: (message) => {
-    get().addLog(`📢 PUBLIC BROADCAST: "${message}"`, 'EMERGENCY');
+    set({ isBroadcasting: true });
+    get().addLog(`📢 PUBLIC AUDIO BROADCAST: "${message}"`, 'EMERGENCY');
     // Simulating clearing the congestion shortly after broadcast
     setTimeout(() => {
-      set({ hasCongestion: false });
-      get().addLog('🛣️ Civic response positive. Road congestion clearing up...', 'SUCCESS');
-    }, 2000);
+      set({ hasCongestion: false, isBroadcasting: false });
+      get().addLog('🛣️ Traffic yielding. Road congestion clearing up...', 'SUCCESS');
+    }, 2500);
   },
 }));
