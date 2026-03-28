@@ -81,40 +81,17 @@ export function ControlPanel() {
             </select>
           </div>
 
-          {/* Emergency Mode Toggle */}
-          <button
-            onClick={toggleEmergencyMode}
-            className={`flex items-center justify-between w-full px-3 py-2.5 rounded-lg border transition-all ${
-              emergencyMode
-                ? 'bg-red-950/50 border-red-500/50 text-red-400'
-                : 'bg-slate-800/50 border-slate-700 text-slate-400'
-            }`}
-          >
+          {/* Emergency Mode Static Indicator */}
+          <div className="flex items-center justify-between w-full px-3 py-2.5 rounded-lg border bg-red-950/50 border-red-500/50 text-red-400">
             <div className="flex items-center gap-2">
-              {emergencyMode ? (
-                <ShieldAlert className="h-4 w-4 text-red-500" />
-              ) : (
-                <Shield className="h-4 w-4" />
-              )}
-              <span className="text-xs font-semibold">Emergency Mode</span>
+              <ShieldAlert className="h-4 w-4 text-red-500 animate-pulse" />
+              <span className="text-xs font-semibold tracking-wide">Emergency Mode</span>
             </div>
-            <div
-              className={`w-9 h-5 rounded-full transition-all relative ${
-                emergencyMode ? 'bg-red-600' : 'bg-slate-700'
-              }`}
-            >
-              <div
-                className={`absolute top-0.5 w-4 h-4 rounded-full bg-white shadow-md transition-all ${
-                  emergencyMode ? 'left-[18px]' : 'left-0.5'
-                }`}
-              />
-            </div>
-          </button>
-          {emergencyMode && (
-            <p className="text-[10px] text-red-400/70 -mt-2 px-1">
-              Traffic-aware routing · Faster roads prioritized · Signals auto-cleared
-            </p>
-          )}
+            <Badge variant="emergency" className="text-[9px] px-1.5 py-0 h-4">ALWAYS ON</Badge>
+          </div>
+          <p className="text-[10px] text-red-400/70 -mt-2 px-1">
+            Traffic-aware routing · Faster roads prioritized · Signals auto-cleared
+          </p>
 
           {/* Congestion Alert & Broadcast */}
           {hasCongestion && isDispatching && (

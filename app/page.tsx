@@ -28,11 +28,6 @@ export default function LandingPage() {
           <Link href="#impact" className="hover:text-white transition-colors">Impact</Link>
           <Link href="#pricing" className="hover:text-white transition-colors">Cities</Link>
         </div>
-        <Link href="/dashboard">
-          <Button variant="outline" className="border-slate-800 bg-slate-900/50 backdrop-blur hover:bg-slate-800 text-slate-200">
-            Launch Platform
-          </Button>
-        </Link>
       </nav>
 
       {/* Hero Section */}
@@ -79,9 +74,6 @@ export default function LandingPage() {
               Start Emergency Demo <ArrowRight className="ml-2 h-5 w-5 group-hover:translate-x-1 transition-transform" />
             </Button>
           </Link>
-          <Button size="lg" variant="outline" className="px-10 h-14 text-md border-slate-700 bg-slate-900/20 backdrop-blur-xl rounded-2xl">
-            Watch Technical Overview
-          </Button>
         </motion.div>
 
         {/* Feature Grid */}
