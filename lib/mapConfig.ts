@@ -15,7 +15,11 @@ export const HOSPITALS = [
   { id: 'H1', name: 'Sher-i-Kashmir Institute (SKIMS)', location: { lat: 34.1331, lng: 74.8021 } },
   { id: 'H2', name: 'SMHS Hospital', location: { lat: 34.0827, lng: 74.7937 } },
   { id: 'H3', name: 'Lalla Ded Hospital', location: { lat: 34.0722, lng: 74.8016 } },
-  { id: 'H4', name: 'Bone and Joint Hospital', location: { lat: 34.0681, lng: 74.7825 } }
+  { id: 'H4', name: 'Bone and Joint Hospital', location: { lat: 34.0681, lng: 74.7825 } },
+  { id: 'H5', name: 'JVC SKIMS (Bemina)', location: { lat: 34.0750, lng: 74.7600 } },
+  { id: 'H6', name: 'JLNM Hospital (Rainawari)', location: { lat: 34.0950, lng: 74.8190 } },
+  { id: 'H7', name: 'CD Hospital (Dalgate)', location: { lat: 34.0850, lng: 74.8320 } },
+  { id: 'H8', name: 'GB Pant Children Hospital', location: { lat: 34.0680, lng: 74.8450 } }
 ];
 
 export const TRAFFIC_SIGNALS = [
