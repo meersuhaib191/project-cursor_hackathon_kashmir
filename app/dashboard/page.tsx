@@ -112,7 +112,7 @@ export default function DashboardPage() {
       {/* Main Content Area */}
       <main className="flex-1 flex flex-col md:flex-row overflow-hidden">
         {/* Map View Section */}
-        <section className="flex-none h-[45vh] md:h-auto md:flex-1 flex flex-col relative">
+        <section className={`flex-none md:h-auto md:flex-1 flex flex-col relative transition-[height] duration-700 ease-in-out ${ambulance.status === 'EMERGENCY' ? 'h-[75vh]' : 'h-[45vh]'}`}>
           {/* Dashboard Header Overlay */}
           <header className="absolute top-0 left-0 right-0 p-3 md:p-6 z-20 flex justify-center md:justify-between items-start pointer-events-none">
             <div className="bg-slate-900/60 md:bg-slate-900/40 backdrop-blur-md border border-slate-700/50 rounded-2xl p-2.5 md:p-4 flex items-center shadow-2xl pointer-events-auto scale-95 md:scale-100 origin-top">
