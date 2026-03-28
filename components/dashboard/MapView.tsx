@@ -277,13 +277,6 @@ export function MapView() {
   return (
     <div className="flex-1 relative flex flex-col">
       <div ref={mapContainer} className="flex-1" />
-      {/* Live Feed Indicator */}
-      <div className="absolute top-4 left-4 z-10 pointer-events-none">
-        <div className="bg-slate-900/80 backdrop-blur border border-slate-700 rounded-lg px-3 py-1.5 flex items-center space-x-2">
-          <div className="h-2 w-2 rounded-full bg-green-500 animate-pulse"></div>
-          <span className="text-[10px] uppercase font-bold text-slate-200 tracking-wider">Live City Feed: Srinagar</span>
-        </div>
-      </div>
     </div>
   );
 }
