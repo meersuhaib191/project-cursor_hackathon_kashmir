@@ -44,7 +44,9 @@ export function MapView() {
       map.current = new mapboxgl.Map({
         container: mapContainer.current,
         style: MAP_CONFIG.MAP_STYLE,
-        center: [MAP_CONFIG.DEFAULT_CENTER.lng, MAP_CONFIG.DEFAULT_CENTER.lat],
+        center: gpsActive 
+          ? [ambulance.location.lng, ambulance.location.lat] 
+          : [MAP_CONFIG.DEFAULT_CENTER.lng, MAP_CONFIG.DEFAULT_CENTER.lat],
         zoom: MAP_CONFIG.DEFAULT_ZOOM,
         pitch: 45,
         bearing: -17,

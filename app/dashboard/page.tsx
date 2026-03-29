@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useRef } from 'react';
 import dynamic from 'next/dynamic';
 import Link from 'next/link';
 import { ControlPanel } from '@/components/dashboard/ControlPanel';
@@ -25,27 +25,46 @@ const MapView = dynamic(() => import('@/components/dashboard/MapView').then(mod 
 });
 
 export default function DashboardPage() {
-  const { ambulance, setAmbulanceLocation, setGpsActive, addLog } = useLifeLineStore();
+  const { ambulance, gpsActive, setAmbulanceLocation, setGpsActive, addLog } = useLifeLineStore();
   const [showNotifications, setShowNotifications] = useState(false);
+  const firstLockRef = useRef(false);
 
   useEffect(() => {
-    // Initial GPS fetch for the dispatcher/driver
+    // Continuous GPS tracking for the dispatcher/driver
+    let watchId: number | null = null;
+    
     if (typeof window !== 'undefined' && 'geolocation' in navigator) {
-      navigator.geolocation.getCurrentPosition(
+      watchId = navigator.geolocation.watchPosition(
         (position) => {
           const { latitude: lat, longitude: lng } = position.coords;
           setAmbulanceLocation({ lat, lng });
           setGpsActive(true);
-          addLog(`GPS lock acquired at ${lat.toFixed(4)}, ${lng.toFixed(4)}. Dispatcher synchronized.`, 'SUCCESS');
+          
+          // Only log the first lock to avoid spamming the log
+          if (!firstLockRef.current) {
+            addLog(`GPS lock acquired at ${lat.toFixed(4)}, ${lng.toFixed(4)}. Dispatcher synchronized.`, 'SUCCESS');
+            firstLockRef.current = true;
+          }
         },
         (error) => {
-          console.warn('Initial geolocation failed:', error);
-          addLog('Startup GPS fetch timed out or denied. Using fallback grid coordinates.', 'WARNING');
+          console.error('GPS Watch error:', error);
+          if (error.code === 1) { // PERMISSION_DENIED
+            addLog('❌ GPS access denied. Please enable location permissions.', 'WARNING');
+          } else {
+            addLog('⚠️ GPS sync interrupted. Using fallback grid.', 'WARNING');
+          }
         },
-        { enableHighAccuracy: true, timeout: 10000, maximumAge: 0 }
+        { enableHighAccuracy: true, timeout: 5000, maximumAge: 0 }
       );
     }
+
+    return () => {
+      if (watchId !== null) {
+        navigator.geolocation.clearWatch(watchId);
+      }
+    };
   }, [setAmbulanceLocation, setGpsActive, addLog]);
+
 
   return (
     <div className="flex flex-col md:flex-row h-[100dvh] bg-slate-950 text-slate-100 overflow-hidden font-sans">
