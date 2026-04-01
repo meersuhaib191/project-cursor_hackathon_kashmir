@@ -4,7 +4,6 @@
 
 ---
 
-
 ## 1. Introduction
 
 **LifeLine AI** is an intelligent, real-time emergency ambulance routing system built for the city of **Srinagar, Kashmir**. The system leverages AI-driven traffic management to dynamically clear traffic signals ahead of an approaching ambulance, reducing response times and potentially saving lives.
