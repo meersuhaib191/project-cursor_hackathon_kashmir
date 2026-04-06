@@ -14,6 +14,7 @@ The core idea is simple but powerful: **when an ambulance is dispatched, every t
 
 ---
 
+
 ## 2. Problem Statement
 
 Emergency vehicles in urban areas frequently get stuck at red traffic signals and in congested roads. Studies show that ambulance response times in Indian cities can exceed **15–20 minutes** due to traffic congestion, whereas the golden hour for critical trauma patients requires response within **8 minutes**.
